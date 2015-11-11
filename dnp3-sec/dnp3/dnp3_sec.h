@@ -12,18 +12,18 @@ typedef unsigned char uchar;
 #define SEC_INDATA_TOOSHORT -3
 
 /*
-	hash 摘要算法 fips 180-2
-	1. 摘要算法本身不需要密码
-	2. sha1输出160bits(20B)摘要
-	3. sha256输出256bits(32B)摘要
+	hash digest algorithm fips 180-2
+	1. Digest algorithm does not require a password
+	2. The output of sha1 is 160bit(20B) digest. 
+	3. The output of sha256 is 256bit(32B) digest.
 */
 #define SHA1_SIZE 20
 #define SHA256_SIZE 32
 
 /*
-	challenge data 挑战值的生成 fips 186-2
-	tips:	1.sha1要求的挑战长度为160bits（20B）
-			2.sha256和aesgmac要求的挑战为256bits（32B）	
+	generated challenge data  fips 186-2
+	tips:	1.The length of challenge data required by sha1 is 160bits(20B).
+			2.The length of challenge data required by sha256 and aesgmac is 256bits(32B).	
 */
 #define CHA_SHA1_SIZE 20
 #define CHA_SHA256_SIZE 32
@@ -32,12 +32,13 @@ typedef unsigned char uchar;
 SEC_RESULT challenge(const uchar* seed, size_t seedlen, uchar* x, const size_t xlen);
 
 /*
-	hmac认证摘要生成算法 RFC3174
-	tips:	1.输出长度sha1		->160bits（20B）（serial截取8B，tcpip截取10B）。
-			2.输出长度sha256	->256bits（32B）（serial截取8B，tcpip截取16B）。
-			3.输入长度			->对生成的挑战做摘要，sha1输入至少为160bits，sha256至少256bits。
-			4.key长度			->至少128bits（16B）,可大于此长度。
+	hmac authentication digest generation algorithm RFC3174
+	tips:	1.the output length of sha1		->160bits（20B）（serial take out 8B from output,tcpip take out 10B from output).
+			2.the output length of sha256	->256bits（32B）（serialtake out 8B from output,tcpip take out 16B from output).
+			3.the input length of algorithm  ->generate digest use generated challenge data ,the input length of sha1 is 160bits at least,the input length of sha256 is 256bits at least.
+			4.key length			->at least 128bits（16B）,it can be longer.
 */
+#define MIN_SESSIONKEY_SIZE 16
 
 #define HMAC_SHA1_SERIAL_SIZE 8
 #define HMAC_SHA1_TCPIP_SIZE 10
@@ -47,9 +48,9 @@ SEC_RESULT challenge(const uchar* seed, size_t seedlen, uchar* x, const size_t x
 SEC_RESULT sha1_hmac(uchar* in,const size_t inlen,uchar* key,const size_t keylen,uchar* out);
 SEC_RESULT sha256_hmac(uchar* in,const size_t inlen,uchar* key,const size_t keylen,uchar* out);
 /*
-	可选aesgmac认证算法 NIST SP 800-38D
-	tips:	1.输出长度96bits(12B)
-			2.初始化向量IV 96bits（12B），根据协议要求提供。
+	optional aesmac authentication algorithm NIST SP 800-38D
+	tips:	1.the output length is 96bits(12B).
+			2.the length of initialization vector IV provided according to protocol requirements is 96bits(12B).
 */
 typedef struct _aesgmac_iv{
 	uchar sender_lsb;
@@ -66,8 +67,11 @@ SEC_RESULT aesgmac_hmac(uchar* in,const size_t inlen,aesgmac_iv* iv,uchar* key,c
 
 
 /* 
-	hmac 认证
-	tips： 要求同上面相同
+	hmac authentication
+	tips:	1.the output length of sha1		->160bits（20B）（serial take out 8B from output,tcpip take out 10B from output).
+			2.the output length of sha256	->256bits（32B）（serialtake out 8B from output,tcpip take out 16B from output).
+			3.the input length of algorithm  ->generate digest use generated challenge data ,the input length of sha1 is 160bits at least,the input length of sha256 is 256bits at least.
+			4.key length			->at least 128bits（16B）,it can be longer.
 */
 SEC_RESULT auth_sha1(uchar* in,const size_t inlen,uchar* key,size_t keylen,uchar* hash,size_t hashlen);
 SEC_RESULT auth_sha256(uchar* in,const size_t inlen,uchar* key,size_t keylen,uchar* hash, size_t hashlen);
@@ -75,11 +79,11 @@ SEC_RESULT auth_sha256(uchar* in,const size_t inlen,uchar* key,size_t keylen,uch
 SEC_RESULT auth_aesgmac(uchar* in,const size_t inlen,aesgmac_iv* iv,uchar* key,size_t keylen,uchar* hash,size_t hashlen);
 
 /*
-	key warp algorithm RFC3394
-	tips:	1.输入和key的长度皆为64bits(8B)倍数
-			2.kek长度					->aes256的kek（update key）为256bits,aes128为128bits
-			3.输入长度（session key)	->至少128bits
-			4.wrap之后会多出64bits（8B），unwrap减少8B
+	key wrap algorithm RFC3394
+	tips:	1.the input length and key length are multiple of 64bits(8B).
+			2.kek length					->kek(updata key) length is 256bits in the aes256 alogrithm,kek(updata key) length is 128bits in the aes128 alogrithm.
+			3.the input length（session key)	->at least 128bits.
+			4.the output length will increase 64bits(8B) after wrap algorithm,in contrast the output length will decrease 64bits(8B) after unwrap algorithm.
 */
 #define AES128_KEK_SIZE 16
 #define AES256_KEK_SIZE 32
