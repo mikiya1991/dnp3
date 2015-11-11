@@ -6,7 +6,7 @@ clean:
 install:
 	@echo Nothing to be made.
 
-include ../lib.rules
+include ./lib.rules
 
 
 CFLAGS += -DCONFIG_TLS_INTERNAL_CLIENT
