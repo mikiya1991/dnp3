@@ -2,14 +2,18 @@
 #include "sha256.h"
 SEC_RESULT sha1_hmac(uchar* in,const size_t inlen,uchar* key,const size_t keylen,uchar* out){
 	if(!in && out) return SEC_ERROR;
-	
+	//check keylen and datalen
+	if(keylen<MIN_SESSIONKEY_SIZE) return SEC_KEYLENGTH_ERROR;
+
 	int ret = hmac_sha1(key,keylen,in,inlen,out);
 	if(ret) return SEC_ERROR;
 	return SEC_SUCCESS;
 }
 SEC_RESULT sha256_hmac(uchar* in,const size_t inlen,uchar* key,const size_t keylen,uchar* out){
 	if(!in && out) return SEC_ERROR;
-	
+	//check keylen and datalen
+	if(keylen<MIN_SESSIONKEY_SIZE) return SEC_KEYLENGTH_ERROR;
+
 	int ret = hmac_sha256(key,keylen,in,inlen,out);
 	if(ret) return SEC_ERROR;
 	return SEC_SUCCESS;
@@ -41,3 +45,13 @@ SEC_RESULT auth_sha256(uchar* in,const size_t inlen,uchar* key,size_t keylen,uch
 	if(ret_cmp) return SEC_ERROR;
 	return SEC_SUCCESS;
 }
+
+SEC_RESULT aesgmac_hmac(uchar* in,const size_t inlen,aesgmac_iv* iv,uchar* key,const size_t keylen,uchar* out){
+
+}
+
+SEC_RESULT auth_aesgmac(uchar* in,const size_t inlen,aesgmac_iv* iv,uchar* key,size_t keylen,uchar* hash,size_t hashlen){
+
+
+}
+
